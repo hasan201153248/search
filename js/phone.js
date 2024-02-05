@@ -1,14 +1,16 @@
+let allPhones; // To store all phones for later use
+
 const loadPhone = async (searchText) => {
   const apiUrl = `https://openapi.programming-hero.com/api/phones?search=${searchText}`;
-  console.log('API URL:', apiUrl);
 
   try {
     const res = await fetch(apiUrl);
     const data = await res.json();
-    console.log('API Response:', data);
 
-    const phones = data.data;
-    displayPhones(phones);
+    allPhones = data.data; // Store all phones
+
+    // Display only the first 5 phones initially
+    displayPhones(allPhones.slice(0, 5));
   } catch (error) {
     console.error('Error fetching data:', error);
   }
@@ -18,12 +20,12 @@ const displayPhones = phones => {
   const phoneContainer = document.getElementById('phone-container');
   phoneContainer.innerHTML = ''; // Clear container cards before adding new cards
 
+  const showAllContainer = document.getElementById('show-all-container');
+  
   phones.forEach(phone => {
-    console.log(phone);
-    // 2. create a div
+    // create a div for each phone
     const phoneCard = document.createElement('div');
     phoneCard.classList = `card bg-gray-100 p-4 shadow-xl`;
-    // 3: set innerHTML
     phoneCard.innerHTML = `<figure><img src="${phone.image}" alt="Phone" /></figure>
       <div class="card-body">
         <h2 class="card-title">${phone.phone_name}</h2>
@@ -37,13 +39,24 @@ const displayPhones = phones => {
     // Append the phoneCard inside the loop
     phoneContainer.appendChild(phoneCard);
   });
+
+  // Toggle the visibility of the "Show All" button
+  if (allPhones.length > 5) {
+    showAllContainer.classList.remove('hidden');
+  } else {
+    showAllContainer.classList.add('hidden');
+  }
+};
+
+const showAllPhones = () => {
+  // Display all phones when "Show All" button is clicked
+  displayPhones(allPhones);
 };
 
 // handle search button
 const handleSearch = () => {
   const searchField = document.getElementById('search-field');
   const searchText = searchField.value;
-  console.log('Search Text:', searchText);
   loadPhone(searchText);
 };
 
